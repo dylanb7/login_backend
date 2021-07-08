@@ -3,8 +3,18 @@ part of '../login_backend.dart';
 class FirebaseAuthRepository extends AuthenticationRepository {
   final auth.FirebaseAuth _auth;
 
-  FirebaseAuthRepository({required auth.FirebaseAuth? firebaseAuth})
-      : _auth = firebaseAuth ?? auth.FirebaseAuth.instance;
+  final CacheClient _cache;
+
+  FirebaseAuthRepository(
+      {CacheClient? cache, required auth.FirebaseAuth? firebaseAuth})
+      : _auth = firebaseAuth ?? auth.FirebaseAuth.instance,
+        _cache = cache ?? CacheClient();
+
+  static const userCacheKey = '__cached_user__';
+
+  User get currentUser {
+    return _cache.read<User>(key: userCacheKey) ?? User.empty;
+  }
 
   @override
   Future<void> logInWithEmailAndPassword(
@@ -36,7 +46,11 @@ class FirebaseAuthRepository extends AuthenticationRepository {
   }
 
   @override
-  Stream<User> get user => _auth.authStateChanges().map((_user) => _user == null
-      ? User.empty
-      : User(id: _user.uid, email: _user.email, name: _user.displayName));
+  Stream<User> get user => _auth.authStateChanges().map((_user) {
+        final User user = _user == null
+            ? User.empty
+            : User(id: _user.uid, email: _user.email, name: _user.displayName);
+        _cache.write(key: userCacheKey, value: user);
+        return user;
+      });
 }
