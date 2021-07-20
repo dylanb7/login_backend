@@ -9,7 +9,7 @@ class Password extends FormzInput<String, FieldError> {
   final PasswordLevel securityLevel;
 
   static final _passwordRegExp = {
-    PasswordLevel.LN8C: RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$'),
+    PasswordLevel.LN8C: RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$'),
   };
 
   const Password.pure([PasswordLevel sec = PasswordLevel.LN8C])

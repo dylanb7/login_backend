@@ -10,10 +10,10 @@ abstract class AuthEvent extends Equatable {
 class AuthLogoutRequested extends AuthEvent {}
 
 class AuthUserChanged extends AuthEvent {
-  
-  const AuthUserChanged(this.user);
 
   final User user;
+  
+  const AuthUserChanged(this.user);
 
   @override
   List<Object> get props => [user];
